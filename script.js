@@ -12,14 +12,13 @@ const bg = document.querySelector(".outerbox");
 const laps = document.getElementById("laps");
 const minute = document.getElementById("minutes");
 const second = document.getElementById("seconds");
-const centiSecond = document.getElementById("milliseconds");
-
-const toggleButton = () => {
-  lapButton.classList.remove("hidden");
-  resetButton.classList.remove("hidden");
-};
+const centiSecond = document.getElementById("centiseconds");
 
 const loop = () => {
+  if (!isPlay && !isReset) {
+    return;
+  }
+
   centisecondsCounter++;
   if (centisecondsCounter == 100) {
     seconds++;
@@ -53,32 +52,32 @@ const loop = () => {
 };
 
 const play = () => {
-  // loop
-  if (!isPlay && !isReset) {
-    isPlay = true;
-    isReset = true;
+  isPlay = !isPlay;
+  isReset = !isReset;
+  if (isPlay && isReset) {
     playButton.innerHTML = "Pause";
     bg.classList.add("animation-bg");
+    lapButton.classList.remove("hidden");
+    resetButton.classList.remove("hidden");
     loop();
   } else {
-    isPlay = false;
-    isReset = false;
     playButton.innerHTML = "Play";
     bg.classList.remove("animation-bg");
   }
-
-  toggleButton();
 };
 
 const reset = () => {
-  isReset = true;
-  isPlay = false;
-  play();
+  isPlay = !isPlay;
+  isReset = !isReset;
   lapButton.classList.add("hidden");
   resetButton.classList.add("hidden");
-  minute.innerHTML = "0";
-  second.innerHTML = "0";
-  centiSecond.innerHTML = "0";
+  playButton.innerHTML = "Play";
+  centisecondsCounter = 0;
+  seconds = 0;
+  minutes = 0;
+  centiSecond.innerHTML = "00";
+  second.innerHTML = "00";
+  minute.innerHTML = "00";
 };
 
 const lap = () => {
@@ -91,7 +90,30 @@ const lap = () => {
   timeStamp.setAttribute("class", "time-stamp");
 
   number.innerHTML = `#${++lapItem} `;
-  timeStamp.innerHTML = `${minCounter} : ${secondsCounter} : ${centiCounter}`;
+
+  let centisecondsCounterStr = "";
+  let secondsStr = "";
+  let minutesStr = "";
+
+  if (minutes < 10) {
+    minutesStr = "0" + minutes;
+  } else {
+    minutesStr = minutes;
+  }
+
+  if (seconds < 10) {
+    secondsStr = "0" + seconds;
+  } else {
+    secondsStr = seconds;
+  }
+
+  if (centisecondsCounter < 10) {
+    centisecondsCounterStr = "0" + centisecondsCounter;
+  } else {
+    centisecondsCounterStr = centisecondsCounter;
+  }
+
+  timeStamp.innerHTML = `${minutesStr} : ${secondsStr} : ${centisecondsCounterStr}`;
 
   li.append(number, timeStamp);
   laps.append(li);
